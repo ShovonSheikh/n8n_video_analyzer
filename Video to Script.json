@@ -1,0 +1,494 @@
+{
+  "name": "Video to Script",
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-flash-latest",
+          "mode": "list"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=# Bengali Voiceover Script Writer\n\n## 🎯 PRIMARY OBJECTIVE\nWrite a Banglish voiceover script that **PERFECTLY MATCHES** the video duration when read at natural speaking pace.\n\n---\n\n## ⏱️ CRITICAL DURATION REQUIREMENTS (MOST IMPORTANT)\n\n### Video Duration\n**This video is {{ $json.candidates[0].content.parts[0].text.match(/ভিডিওটি (\\d+) সেকেন্ড/)?.[1] || '30' }} seconds long.**\n\n### Word Count Calculation\n- **Natural Banglish speaking pace: 2.5 words per second**\n- **Maximum words allowed: {{ (parseInt($json.candidates[0].content.parts[0].text.match(/ভিডিওটি (\\d+) সেকেন্ড/)?.[1]) || 30) * 2.5 }} words**\n- **This is a HARD LIMIT - DO NOT EXCEED**\n\n### Duration Matching Rules\n1. Your script must take the **same time to read aloud** as the video length\n2. At 2.5 words/second pace, your script should be approximately {{ (parseInt($json.candidates[0].content.parts[0].text.match(/ভিডিওটি (\\d+) সেকেন্ড/)?.[1]) || 30) * 2.5 }} words\n3. **Count your words before submitting** - if over the limit, cut content\n4. Better to be slightly SHORT than too long\n\n---\n\n## 🎭 TONE & STYLE REFERENCE\n\nYour script must sound **natural, conversational, and filled with wonder** (bismoy ebong mugdhota).\n\n**Reference Example:**\n> \"Ek kotha-y amar dekha ekdom byatyikromadhormi ekta biye-r ayojon. Puro ayojon-ta-i kora hoyeche ekdom dhan kheter majhkhane. Ekhon jader dekhte pachchen, enara holo bor ebong kone. Ebong tader charpash jure otithi ebong attiyoshojoneder jonno kora hoyechilo boshar byabostha. Ar sheta-o dhan kheter bhetore-i. Bhaba jay! Charpashe dulchhe sonali foshol.\"\n\n**Key Style Elements:**\n- **Conversational Flow:** Natural spoken Banglish as Bengalis speak\n- **Emotional Words:** Use \"Bhaba jay!\", \"ekdom alada\", \"bishoy ta\", \"dekhtei\"\n- **Visual Contrast:** Compare unique situations with typical scenarios\n- **Natural Rhythm:** Vary sentence length for speaking flow\n\n---\n\n## 📝 CONTENT GUIDELINES\n\n### What to Include\n1. **Opening Hook (first 5-10 sec):** Strong observation matching opening visual\n2. **Key Visual Details:** Describe what appears on screen as it happens\n3. **Emotional Peak:** Build to the most dramatic moment (align with analysis climax timing)\n4. **Closing Thought:** End with reflective statement in final 5-10 seconds\n\n### What to Describe\n- Who/what is visible (characters, objects, people)\n- What they're doing (actions, movements)\n- Environment setting (background, lighting, colors)\n- Important objects or unique elements\n- Emotional atmosphere (mood, feelings)\n\n### Timeline Sync\nThe video analysis provides timestamps. Your script must:\n- Describe visuals **when they actually appear** on screen\n- Follow the sequence of events from the analysis\n- Place key descriptions at the right moments\n\n---\n\n## 🎬 PACING INSTRUCTIONS\n\n### Follow Analysis Pacing Notes\n- **\"Fast-paced section\"** → Write concise, punchy sentences\n- **\"Slow-paced section\"** → Use longer, descriptive phrases  \n- **\"Emotional peak/climax\"** → Most impactful lines go here\n- **\"Pause needed\"** → Complete thought, allow visual to breathe\n\n### Reading Pace Reference\n- Normal narration: ~2.5 words per second\n- Emotional moments: ~2 words per second (slower)\n- Fast descriptive parts: ~3 words per second\n\n---\n\n## ✍️ BANGLISH WRITING GUIDE\n\n### How to Write Banglish\n- Write exactly as Bengalis **pronounce** words\n- Use hyphens for compound words: \"biye-r\", \"kheter\", \"ayojon-ta\"\n- Common conversions: য় = y, ও = o, এ = e, আ = a, ী = i, ূ = u\n- Keep natural flow of spoken Bengali\n\n### Examples\n- ✅ \"Ek kotha-y amar dekha\" \n- ✅ \"Bhaba jay! Charpashe dulchhe\"\n- ❌ Don't use formal/written Bengali structure\n\n---\n\n## 🚫 OUTPUT FORMAT RULES\n\n### ✅ DO Include\n- Pure Banglish voiceover text only\n- Natural paragraph breaks where narrative shifts\n- Conversational, flowing language\n\n### ❌ DO NOT Include\n- Section labels (\"The Hook\", \"Body\", \"Climax\")\n- Timestamp markers ([0-10 seconds])\n- English annotations or meta-commentary\n- Pacing notes or instructions\n- Structural headings\n\n---\n\n## 📋 QUALITY CHECKLIST\n\nBefore finalizing, verify:\n\n### Duration & Length\n- [ ] Word count is ≤ {{ (parseInt($json.candidates[0].content.parts[0].text.match(/ভিডিওটি (\\d+) সেকেন্ড/)?.[1]) || 30) * 2.5 }} words\n- [ ] Script takes ~{{ $json.candidates[0].content.parts[0].text.match(/ভিডিওটি (\\d+) সেকেন্ড/)?.[1] || '30' }} seconds to read at natural pace\n- [ ] Not too long or too short\n\n### Content Quality\n- [ ] Based strictly on video analysis details\n- [ ] No invented details\n- [ ] Key visual elements described\n- [ ] Emotional moments captured\n\n### Style & Tone  \n- [ ] Conversational Banglish (natural speaking)\n- [ ] Emotional words included\n- [ ] Visual contrasts highlighted\n- [ ] Natural rhythm with varied sentences\n\n### Format\n- [ ] No labels, timestamps, or English notes\n- [ ] Only clean Banglish text\n- [ ] Paragraph breaks only\n\n---\n\n## 📥 VIDEO ANALYSIS INPUT\n\n{{ $json.candidates[0].content.parts[0].text }}\n\n---\n\n## 🎬 YOUR TASK - START WRITING\n\n**Remember:**\n1. **Video is {{ $json.candidates[0].content.parts[0].text.match(/ভিডিওটি (\\d+) সেকেন্ড/)?.[1] || '30' }} seconds**\n2. **Maximum {{ (parseInt($json.candidates[0].content.parts[0].text.match(/ভিডিওটি (\\d+) সেকেন্ড/)?.[1]) || 30) * 2.5 }} words allowed**\n3. Read analysis timestamps carefully\n4. Output ONLY the Banglish script (no labels/annotations)\n\nWrite the script now (keep it under {{ (parseInt($json.candidates[0].content.parts[0].text.match(/ভিডিওটি (\\d+) সেকেন্ড/)?.[1]) || 30) * 2.5 }} words):"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1216,
+        560
+      ],
+      "id": "56a5009f-f223-4633-8280-8051b16591eb",
+      "name": "Generate Script",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "1RNjQ0gOvGy3INEX",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6024349418",
+        "text": "=📝 New Script Ready!\n\n{{ $json.content.parts[0].text }}\n\n---\n\n🎙️ Please send your voiceover audio as a voice message.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        560
+      ],
+      "id": "6006bb0c-137a-4af0-baca-c55e877323a3",
+      "name": "Send Script to Telegram",
+      "webhookId": "b695c65d-96f2-4fff-9a3a-d97dd645dbb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "YYkv93HsAf7hyV0A",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2224,
+        560
+      ],
+      "id": "815143d6-3927-47d8-adf1-7e0072f3cd7d",
+      "name": "Wait for Audio Response",
+      "webhookId": "audio-response-webhook"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1htTAPNhr1q_rnNwoZ0HHeTWALgf-rzoc",
+          "mode": "list",
+          "cachedResultName": "n8n-test"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "name": "Google Drive Trigger1",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        288,
+        560
+      ],
+      "id": "ed454833-9cb9-4123-b48e-dfb1a60aeaca",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "g8dybeJRFFFebR03",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const fileId = $input.first().json.id;\nconst fileName = $input.first().json.name;\nconst createdTime = new Date($input.first().json.createdTime);\nconst staticData = $getWorkflowStaticData('global');\n\nif (!staticData.processedFiles) {\n  staticData.processedFiles = {};\n}\n\nif (staticData.processedFiles[fileId]) {\n  console.log(`⏭️ Skipping already processed file: ${fileName}`);\n  return [];\n}\n\nconst now = Date.now();\nconst fiveMinutesAgo = now - (2 * 60 * 1000);\n\nif (createdTime.getTime() < fiveMinutesAgo) {\n  console.log(`⏭️ Skipping old file: ${fileName}`);\n  return [];\n}\n\nstaticData.processedFiles[fileId] = {\n  name: fileName,\n  processedAt: now,\n  createdTime: createdTime.toISOString()\n};\n\nconst processedIds = Object.keys(staticData.processedFiles);\nif (processedIds.length > 100) {\n  const sorted = processedIds\n    .map(id => ({ id, time: staticData.processedFiles[id].processedAt }))\n    .sort((a, b) => b.time - a.time)\n    .slice(0, 100);\n  const newProcessedFiles = {};\n  sorted.forEach(item => {\n    newProcessedFiles[item.id] = staticData.processedFiles[item.id];\n  });\n  staticData.processedFiles = newProcessedFiles;\n}\n\nconsole.log(`✅ Processing new file: ${fileName}`);\nreturn [$input.first()];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        560
+      ],
+      "id": "05bdfa7f-5658-4cef-97b1-45c6ef99c719",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "name": "Download Video1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        752,
+        560
+      ],
+      "id": "7651c209-e299-4522-a190-802ff5aee274",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "g8dybeJRFFFebR03",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-flash-latest",
+          "mode": "list"
+        },
+        "text": "=# Video Analysis Prompt (For Voiceover Script Creation)\n\n## Your Task\nএই video তে কী ঘটছে তা বাংলায় বিস্তারিত বর্ণনা করো। \n\nতবে শুধু সাধারণ বর্ণনা নয় - এমনভাবে বর্ণনা করো যাতে পরে voiceover script লেখার সময় video এবং audio perfectly sync হয়।\n\n## বর্ণনার ফরম্যাট\n\nতোমার বর্ণনায় এই তথ্যগুলো অবশ্যই অন্তর্ভুক্ত করতে হবে:\n\n### ১. ভিডিওর মোট দৈর্ঘ্য\n- ভিডিওটি কত সেকেন্ড/মিনিট দীর্ঘ?\n\n### ২. Timestamp অনুযায়ী ঘটনা\nপ্রতিটি major visual moment এর জন্য timestamp সহ বর্ণনা দাও:\n\n**উদাহরণ ফরম্যাট:**\n```\n[0-5 সেকেন্ড]: ভিডিওর শুরুতে কী দেখা যাচ্ছে...\n[5-12 সেকেন্ড]: এরপর কী ঘটছে...\n[12-25 সেকেন্ড]: মূল ঘটনা শুরু হচ্ছে...\n[25-40 সেকেন্ড]: Climax moment...\n[40-45 সেকেন্ড]: ভিডিও শেষ হচ্ছে...\n```\n\n### ৩. Visual Details (দৃশ্যগত বিস্তারিত)\nপ্রতিটি scene এ বর্ণনা করো:\n- **কারা আছে?** (চরিত্র, মানুষ, বস্তু)\n- **তারা কী করছে?** (action, movement)\n- **পরিবেশ কেমন?** (setting, background, lighting)\n- **রং/mood কেমন?** (colors, atmosphere)\n- **কোন গুরুত্বপূর্ণ বস্তু দেখা যাচ্ছে?** (important objects, props)\n\n### ৪. ঘটনার ক্রম (Sequence of Events)\nঘটনাগুলো কোন ক্রমে ঘটছে তা স্পষ্টভাবে বর্ণনা করো:\n- প্রথমে কী হয়\n- তারপর কী হয়\n- সবচেয়ে গুরুত্বপূর্ণ মুহূর্ত কোনটি\n- শেষে কী দিয়ে ভিডিও শেষ হয়\n\n### ৫. Emotional Moments (আবেগময় মুহূর্ত)\nকোন কোন moment গুলো emotionally powerful?\n- যেখানে narration pause করা উচিত\n- যেখানে viewer দের focus করানো দরকার\n- যেখানে সবচেয়ে বেশি dramatic impact আছে\n\n### ৬. Audio Cues (যদি থাকে)\nভিডিওতে কি কোনো sound আছে যা important?\n- পটভূমি সংগীত\n- প্রাকৃতিক শব্দ\n- মানুষের কথা বলা\n- বিশেষ sound effects\n\n## বর্ণনার উদাহরণ\n\n**ভালো বর্ণনা (Timestamp সহ):**\n```\n**ভিডিওর দৈর্ঘ্য:** 45 সেকেন্ড\n\n**Timeline বর্ণনা:**\n\n[0-8 সেকেন্ড - Opening]: \nভিডিওর শুরুতে দেখা যাচ্ছে একটি বিশাল ধানক্ষেত। চারদিকে সোনালি রঙের পাকা ধান দুলছে। ক্যামেরা ধীরে ধীরে zoom করছে এবং দেখা যাচ্ছে ক্ষেতের মাঝখানে একটি সাজানো মঞ্চ।\n\n[8-15 সেকেন্ড - Characters Appear]:\nএরপর দেখা যায় একজন বর এবং কনে মঞ্চে বসে আছেন। তারা ঐতিহ্যবাহী পোশাক পরে আছেন। বরের পরনে লাল পাঞ্জাবি এবং কনের পরনে লাল বেনারসি শাড়ি।\n\n[15-30 সেকেন্ড - Main Event]:\nক্যামেরা চারপাশে pan করলে দেখা যায় ধানক্ষেতের ভেতরেই অতিথিদের জন্য চেয়ার সাজানো। প্রায় ৫০-৬০ জন মানুষ উপস্থিত। সবাই হাসিখুশি, ছবি তুলছে।\n\n[30-38 সেকেন্ড - Climax/Emotional Peak]:\nবিয়ের প্রধান আচার-অনুষ্ঠান চলছে। পুরোহিত মন্ত্র পড়ছেন। এই মুহূর্তটি সবচেয়ে emotional - এখানে narration একটু pause করা যেতে পারে যাতে দর্শকরা দৃশ্যটি absorb করতে পারে।\n\n[38-45 সেকেন্ড - Conclusion]:\nশেষ দৃশ্যে ক্যামেরা আবার wide shot নিচ্ছে - পুরো ধানক্ষেত, বিয়ের মঞ্চ এবং আকাশের একসাথে একটি beautiful frame। সূর্যের আলো পড়ে পুরো দৃশ্যটি golden glow তে ভরে গেছে।\n\n**Key Visual Elements:**\n- সোনালি ধানক্ষেত (dominant color)\n- ঐতিহ্যবাহী বিয়ের পোশাক (red/golden)\n- মানুষের আবেগ (smiles, joy)\n- প্রাকৃতিক setting vs ঐতিহ্যবাহী ceremony এর contrast\n\n**Emotional Peaks:**\n- 30-38 সেকেন্ডে main ceremony - এখানে সবচেয়ে বেশি emotional weight\n- এখানে narration pause বা slow down করা উচিত\n\n**Audio Notes:**\n- ব্যাকগ্রাউন্ডে হালকা বাতাসের শব্দ শোনা যাচ্ছে\n- মানুষের হাসি এবং কথা বলার শব্দ আছে\n```\n\n## তোমার কাজ\n\nএখন এই format অনুসরণ করে video টির সম্পূর্ণ বর্ণনা দাও যাতে:\n1. **Timeline clear থাকে** (প্রতিটি scene এর timestamp)\n2. **Visual details পরিষ্কার থাকে** (কী দেখা যাচ্ছে)\n3. **Emotional moments চিহ্নিত থাকে** (কোথায় pause করতে হবে)\n4. **Sequence বোঝা যায়** (কোন ঘটনা কখন ঘটছে)\n\nএই তথ্য দিয়ে পরে perfectly synced voiceover script তৈরি করা সহজ হবে।",
+        "inputType": "binary",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        992,
+        560
+      ],
+      "id": "7c7eab7b-498d-4bb4-adea-9affbf81a2cd",
+      "name": "Analyze video1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "1RNjQ0gOvGy3INEX",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the current resume URL\nconst resumeUrl = $execution.resumeUrl;\n\n// Prepare data for the Data Table\nconst tableData = {\n  id: $execution.id, // Use execution ID as unique identifier\n  resume_urls: resumeUrl,\n  createdAt: new Date().toISOString(),\n  updatedAt: new Date().toISOString()\n};\n\nconsole.log('✅ Preparing to store resume URL in Data Table');\nconsole.log('Resume URL:', resumeUrl);\nconsole.log('Execution ID:', $execution.id);\n\n// Return the data that will be inserted into the Data Table\nreturn tableData;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        560
+      ],
+      "id": "76a86da7-5f3c-4bff-8633-1193adff00df",
+      "name": "Store Video Info"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.jsonbin.io/v3/b/694fd909d0ea881f404356fa",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Master-Key",
+              "value": "$2a$10$8PC0U03GuucFp/3wuxK57.6PQDZyud.XABe9t9Vyg8G1Xk4GUbBQW"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"resumeUrl\": \"{{ $execution.resumeUrl }}\",\n  \"executionId\": \"{{ $execution.id }}\",\n  \"timestamp\": \"{{ new Date().toISOString() }}\",\n  \"status\": \"waiting_for_audio\",\n  \"videoId\": \"{{ $('Google Drive Trigger1').first().json.id }}\",\n  \"videoName\": \"{{ $('Google Drive Trigger1').first().json.name }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2016,
+        560
+      ],
+      "id": "f0524664-041e-4ae5-967f-93cd165baf71",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive Trigger1').first().json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2432,
+        560
+      ],
+      "id": "e6bd4a16-e5b6-43ed-8f6a-0efc55d85c3f",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "g8dybeJRFFFebR03",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "name contains '_audio.ogg' and trashed = false",
+        "filter": {},
+        "options": {
+          "fields": [
+            "webViewLink"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2640,
+        560
+      ],
+      "id": "895f9a23-bd20-4a61-bd17-8b98de3b9403",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "g8dybeJRFFFebR03",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    base_video: $('Google Drive Trigger1').first().json.webViewLink,\n    base_audio: $input.first().json.webViewLink,\n    chat_id: $('Send Script to Telegram').first().json.result.from.id\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2848,
+        560
+      ],
+      "id": "d7572b02-2196-46f7-9d44-62d53f1b91cb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Vcofp8NXXEShcs5o",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Vcofp8NXXEShcs5o",
+          "cachedResultName": "Video creator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "base_audio": "={{ $json.base_audio }}",
+            "base_video": "={{ $json.base_video }}",
+            "chat_id": "6024349418"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "base_audio",
+              "displayName": "base_audio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "base_video",
+              "displayName": "base_video",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3056,
+        560
+      ],
+      "id": "8e5a8641-6e57-464f-8118-0a2d4928d97e",
+      "name": "Call 'Video creator'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Generate Script": {
+      "main": [
+        [
+          {
+            "node": "Send Script to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Script to Telegram": {
+      "main": [
+        [
+          {
+            "node": "Store Video Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Audio Response": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Download Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video1": {
+      "main": [
+        [
+          {
+            "node": "Analyze video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze video1": {
+      "main": [
+        [
+          {
+            "node": "Generate Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Video Info": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait for Audio Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Call 'Video creator'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "85b7ce1e-150a-4039-978f-10728541a411",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "163174043e5232d69d978b66eed4b43cf9ab2698264ef11b8bb3a00a98c2f74f"
+  },
+  "id": "wY6MedPSqsj33qeb",
+  "tags": []
+}

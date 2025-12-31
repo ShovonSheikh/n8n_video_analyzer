@@ -1,0 +1,475 @@
+{
+  "name": "Audio Receiver",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "✅ Audio file received! Processing your video now...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3840,
+        2736
+      ],
+      "id": "248e5f3d-096b-4452-9f68-8e92c0c782fa",
+      "name": "Send Confirmation Message",
+      "webhookId": "e18b0ef3-d90f-48dd-a6fe-8c5e01822958",
+      "credentials": {
+        "telegramApi": {
+          "id": "YYkv93HsAf7hyV0A",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        3632,
+        2736
+      ],
+      "id": "d34fd33e-668b-4799-8700-234317019cdf",
+      "name": "Telegram Trigger",
+      "webhookId": "4828de97-64a6-46c9-a5f5-01b303989cca",
+      "credentials": {
+        "telegramApi": {
+          "id": "YYkv93HsAf7hyV0A",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "78c4ec96-bb91-410f-9b9e-36512437be43",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.document.mime_type }}",
+              "rightValue": "audio",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        4048,
+        2736
+      ],
+      "id": "b0393aa0-a4c7-4baf-8824-5956286c4bdb",
+      "name": "Check if Audio"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot8521056441:AAEdbe1NCCEFos1yD8kFfZHfCwgAx7XW2O4/getFile",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $json.audioFileId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4704,
+        2528
+      ],
+      "id": "744c57c8-8b41-4369-a16e-429b94cfd3f9",
+      "name": "Get File Path"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot8521056441:AAEdbe1NCCEFos1yD8kFfZHfCwgAx7XW2O4/{{ $json.result.file_path }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4912,
+        2528
+      ],
+      "id": "917b27cd-b830-4fd4-b8b7-1260216f1551",
+      "name": "Download Audio"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('HTTP Request').item.json.record.resumeUrl }}",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "={{ $('Telegram Trigger').item.json.message.document.mime_type }}",
+        "body": "={{ $binary.data }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5520,
+        2528
+      ],
+      "id": "aec67905-4437-4255-b024-b9645c985985",
+      "name": "Send to Workflow 1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "✅ Done! Your audio has been processed successfully.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5968,
+        2512
+      ],
+      "id": "f5ebc457-47a9-4aa2-bdbb-0a0397babc1d",
+      "name": "Send Success Message",
+      "webhookId": "53729749-b9ed-4270-8e32-dcde2839ee52",
+      "credentials": {
+        "telegramApi": {
+          "id": "YYkv93HsAf7hyV0A",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "=❌ Error: {{ $json.error?.message || 'The workflow is no longer waiting. Please upload a new video.' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5968,
+        2768
+      ],
+      "id": "accdf536-1e66-458d-8f3d-499839b431dc",
+      "name": "Send Error Message",
+      "webhookId": "dca82bb0-05c8-4080-9dcf-a71e3e86df08",
+      "credentials": {
+        "telegramApi": {
+          "id": "YYkv93HsAf7hyV0A",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4288,
+        2896
+      ],
+      "id": "b8f72e8c-26a2-4ef2-8af2-e02c95557767",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "url": "https://api.jsonbin.io/v3/b/694fd909d0ea881f404356fa/latest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Master-Key",
+              "value": "$2a$10$8PC0U03GuucFp/3wuxK57.6PQDZyud.XABe9t9Vyg8G1Xk4GUbBQW"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4288,
+        2528
+      ],
+      "id": "1b2e2f52-ac13-49d0-8bb3-eed029304a1b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jsonbinResponse = $input.first().json;\nconst data = jsonbinResponse.record;\n\nif (!data || !data.resumeUrl) {\n  throw new Error('❌ No resume URL found. Please upload a video first in the main workflow.');\n}\n\nconst resumeUrl = data.resumeUrl;\n\nconsole.log('✅ Found resume URL:', resumeUrl);\nconsole.log('Execution ID:', data.executionId);\nconsole.log('Video ID:', data.videoId);\nconsole.log('Video Name:', data.videoName);\n\n// Get telegram message\nconst message = $('Telegram Trigger').first().json.message;\nconst audioFileId = message.document?.file_id || \n                   message.audio?.file_id || \n                   message.voice?.file_id;\nconst chatId = message.from.id;\n\nif (!audioFileId) {\n  throw new Error('❌ No audio file found in message');\n}\n\nif (data.status !== 'waiting_for_audio') {\n  throw new Error('❌ This workflow is no longer waiting for audio. Please upload a new video.');\n}\n\nreturn {\n  json: {\n    resumeUrl: resumeUrl,\n    audioFileId: audioFileId,\n    chatId: chatId,\n    executionId: data.executionId,\n    videoId: data.videoId,        // ← Add this\n    videoName: data.videoName      // ← Add this\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4496,
+        2528
+      ],
+      "id": "ff711287-0dd1-4f21-9d38-7e4bdfded598",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "04713df0-60df-4cd6-93ea-ceb331616dbc",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "Workflow was started",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        5712,
+        2528
+      ],
+      "id": "957ef0f5-4bac-46f2-bda6-7d0ce85819e7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Code in JavaScript').item.json.videoName.replace(/\\.(mp4|mov|avi)$/i, '_audio.ogg') }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1htTAPNhr1q_rnNwoZ0HHeTWALgf-rzoc",
+          "mode": "list",
+          "cachedResultName": "n8n-test",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1htTAPNhr1q_rnNwoZ0HHeTWALgf-rzoc"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        5120,
+        2528
+      ],
+      "id": "66d73203-4125-41b0-a24e-1bc4df229a53",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "g8dybeJRFFFebR03",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot8521056441:AAEdbe1NCCEFos1yD8kFfZHfCwgAx7XW2O4/{{ $('Download Audio').item.json.result.file_path }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5328,
+        2528
+      ],
+      "id": "7a8175f8-ea8f-46ed-8e58-852f3c153a0d",
+      "name": "Download Audio1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Audio": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File Path": {
+      "main": [
+        [
+          {
+            "node": "Download Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Workflow 1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Get File Path",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send Success Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Error Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation Message": {
+      "main": [
+        [
+          {
+            "node": "Check if Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Download Audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio1": {
+      "main": [
+        [
+          {
+            "node": "Send to Workflow 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "668befd4-643e-4c1f-82f7-dee2de8b80ce",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "163174043e5232d69d978b66eed4b43cf9ab2698264ef11b8bb3a00a98c2f74f"
+  },
+  "id": "zcWmYH0UIGJt3diM",
+  "tags": []
+}
